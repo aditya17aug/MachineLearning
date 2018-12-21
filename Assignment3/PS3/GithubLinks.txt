@@ -1,0 +1,12 @@
+https://github.com/BoyuXu/eecs349
+https://github.com/RifleZhang/eecs349
+https://github.com/dawn-chu/EECS349-Machine-Learning/
+https://github.com/yuchenrao/eecs349_HW4
+
+https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#Instances:sort=instanceId
+https://www.gutenberg.org/browse/scores/top
+
+python3 train.py --data_file=/home/ubuntu/tensorflow-char-rnn/data/mydata/GreatExpectationsByCharlesDickens.txt --encoding="utf-8" --batch_size=100 --output_dir=/home/ubuntu/tensorflow-char-rnn/havefun/
+
+tensorboard --logdir=/home/ubuntu/tensorflow-char-rnn/havefun/tensorboard_log --port=6007
+python3 sample.py --init_dir=/home/ubuntu/tensorflow-char-rnn/havefun --length=1000 --seed=1 --start_text="your-start-text" --temperature=0.5

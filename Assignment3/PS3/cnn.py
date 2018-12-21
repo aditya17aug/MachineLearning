@@ -1,0 +1,155 @@
+#Trains a simple convnet on the MNIST dataset to get even or odd labeled
+
+import keras
+import os.path
+from keras.models import model_from_json
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras import backend as K
+from keras.callbacks import TensorBoard
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
+import os
+import tensorflow as tf
+from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.python.eager import context
+
+#Genrate and plot graph in log file
+class TrainValTensorBoard(TensorBoard):
+    def __init__(self, log_dir='./log', **kwargs):
+        self.val_log_dir = os.path.join(log_dir, 'validation')
+        training_log_dir = os.path.join(log_dir, 'training')
+        super(TrainValTensorBoard, self).__init__(training_log_dir, **kwargs)
+
+    def set_model(self, model):
+        if context.executing_eagerly():
+            self.val_writer = tf.contrib.summary.create_file_writer(self.val_log_dir)
+        else:
+            self.val_writer = tf.summary.FileWriter(self.val_log_dir)
+        super(TrainValTensorBoard, self).set_model(model)
+
+    def _write_custom_summaries(self, step, logs=None):
+        logs = logs or {}
+        val_logs = {k.replace('val_', ''): v for k, v in logs.items() if 'val_' in k}
+        if context.executing_eagerly():
+            with self.val_writer.as_default(), tf.contrib.summary.always_record_summaries():
+                for name, value in val_logs.items():
+                    tf.contrib.summary.scalar(name, value.item(), step=step)
+        else:
+            for name, value in val_logs.items():
+                summary = tf.Summary()
+                summary_value = summary.value.add()
+                summary_value.simple_value = value.item()
+                summary_value.tag = name
+                self.val_writer.add_summary(summary, step)
+        self.val_writer.flush()
+
+        logs = {k: v for k, v in logs.items() if not 'val_' in k}
+        super(TrainValTensorBoard, self)._write_custom_summaries(step, logs)
+
+    def on_train_end(self, logs=None):
+        super(TrainValTensorBoard, self).on_train_end(logs)
+        self.val_writer.close()
+
+# Batch size for the images.
+batch_size = 128
+
+# Number of epochs.
+epochs = 5
+
+# The images are 28 pixels in each dimension.
+img_size = 28
+
+# The images are stored in one-dimensional arrays of this length.
+img_size_flat = img_size * img_size
+
+# Tuple with height and width of images used to reshape arrays.
+img_shape = (img_size, img_size)
+
+# Number of classes, one class for even, one for odd digits.
+num_classes = 2
+
+# input image dimensions
+img_rows, img_cols = 28, 28
+#model name
+path_model = 'cnn_model.h5'
+#weighted model name
+path_model_weight = 'cnn_model_weight.h5'
+K.clear_session()
+
+def precision(y_true, y_pred):
+    # Calculates the precision
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+def recall(y_true, y_pred):
+    # Calculates the recall
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+# the data, shuffled and split between train and test sets
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+if K.image_data_format() == 'channels_first':
+    x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
+    x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
+    input_shape = (1, img_rows, img_cols)
+else:
+    x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+    x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+    input_shape = (img_rows, img_cols, 1)
+
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train /= 255
+x_test /= 255
+print('x_train shape:', x_train.shape)
+print(x_train.shape[0], 'train samples')
+print(x_test.shape[0], 'test samples')
+
+# convert class vectors to binary class matrices
+y_train = keras.utils.to_categorical(list(map(lambda x : x%2, y_train)), num_classes)
+y_test = keras.utils.to_categorical(list(map(lambda x : x%2, y_test)), num_classes)
+
+model = Sequential()
+model.add(Conv2D(32, kernel_size=(5, 5),
+                 activation='relu',
+                 kernel_initializer='he_normal',
+                 input_shape=input_shape))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(64, (5, 5),kernel_initializer='he_normal', activation='relu'))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+#connected Dense layer.
+model.add(Flatten())
+model.add(Dense(1024, kernel_initializer='he_normal', activation='relu'))  # 1024 / 512
+model.add(Dropout(0.4))
+model.add(Dense(num_classes,kernel_initializer='he_normal', activation='softmax')) # even and odd with 2 bit
+if(os.path.isfile(path_model_weight)):
+  model.load_weights(path_model_weight)
+model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.SGD(lr=0.001, momentum=0.0, decay=0.0, nesterov=False),
+              metrics=['accuracy',recall,precision])
+
+model.fit(x_train, y_train,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,
+          validation_data=(x_test, y_test),
+          callbacks=[TrainValTensorBoard(write_graph=False)])
+
+score = model.evaluate(x_test, y_test, verbose=0) #evaluate model
+print('Test loss:', score[0])
+print("%s: %.2f%%" % ('Test accuracy:', score[1]*100))
+
+
+# save model
+model.save(path_model)
+#Saving the model weight that can be utilized in further training
+model.save_weights(path_model_weight)
+del model

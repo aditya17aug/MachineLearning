@@ -1,0 +1,20 @@
+COCO_val2014_000000183889.jpg ----- a person holding up a cell phone 
+COCO_val2014_000000431159.jpg ----- A large elephant rests on a black pole.
+COCO_val2014_000000193332.jpg ----- A bride and groom cut the cake on their wedding day.
+COCO_val2014_000000008292.jpg ----- Picture of bathroom with shower in far corner and toilet sitting nearest to the door.
+COCO_val2014_000000276616.jpg ----- A glass of wine is sitting next to another.
+COCO_val2014_000000049942.jpg ----- A man with glasses is wearing suit and tie.
+COCO_val2014_000000033377.jpg ----- Surfer holding his board walking towards the water. 
+COCO_val2014_000000109888.jpg ----- A group of sheep grazing in a field.
+COCO_val2014_000000188308.jpg ----- A pair of motorcycles parked in a bike slot.
+COCO_val2014_000000403389.jpg ----- A plate with broccoli, potatoes and a meat with sauce arranged on it.
+COCO_val2014_000000526940.jpg ----- A woman takes a self portrait in a mirror
+COCO_val2014_000000522032.jpg ----- Two sheep in a field with long grass.
+COCO_val2014_000000492678.jpg ----- A man stands and talks on his cell phone.
+COCO_val2014_000000487131.jpg ----- A rusted vintage pickup truck sits in a field with a windmill in the background
+COCO_val2014_000000194434.jpg ----- A bedroom door is open and a pink, yellow, and blue bed is nicely made.
+COCO_val2014_000000242934.jpg ----- A bathroom with a shower, toilet, and sink.
+COCO_val2014_000000355756.jpg ----- A bus parked at a stop beside a small home
+COCO_val2014_000000220858.jpg ----- A couple of boats sitting on top of a lake.
+COCO_val2014_000000072052.jpg ----- A tall brown brick building next to a street with traffic.
+COCO_val2014_000000484551.jpg ----- Boat running over the ocean creating large wakes.

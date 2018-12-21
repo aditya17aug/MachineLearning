@@ -1,0 +1,11 @@
+Class,Age,Competition,Type
+down,old,yes,software
+down,old,no,software
+down,old,no,hardware
+down,mid,yes,software
+down,mid,yes,hardware
+up,mid,no,hardware
+up,mid,no,software
+up,new,yes,software
+up,new,no,hardware
+up,new,no,software

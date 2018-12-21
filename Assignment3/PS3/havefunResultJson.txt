@@ -1,0 +1,19 @@
+{
+  "best_model": "/home/ubuntu/tensorflow-char-rnn/myoutput/best_model/model-45619",
+  "best_valid_ppl": 3.7417757511138916,
+  "encoding": "utf-8",
+  "latest_model": "/home/ubuntu/tensorflow-char-rnn/myoutput/save_model/model-46550",
+  "params": {
+    "batch_size": 100,
+    "dropout": 0.5,
+    "embedding_size": 0,
+    "hidden_size": 128,
+    "input_dropout": 0.0,
+    "learning_rate": 0.002,
+    "max_grad_norm": 5.0,
+    "model": "lstm",
+    "num_layers": 2,
+    "num_unrollings": 10,
+    "vocab_size": 89
+  },
+  "vocab_file": "/home/ubuntu/tensorflow-char-rnn/myoutput/vocab.json"
